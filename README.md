@@ -1,0 +1,1 @@
+<h1 aling="center"> B. Con interacción de consola (fprintf o disp) y teclado (input) <br>
