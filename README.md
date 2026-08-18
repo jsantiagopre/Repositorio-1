@@ -1,6 +1,6 @@
 <h1 aling="center"> Taller 1 – Python (código) <h1>
 
-<h2>A. Sin interacción de consola<h2>
+<h4>A. Sin interacción de consola<h4>
 
 1. Realice un programa que sume, reste, multiplique (producto punto y producto cruz) y divida dos vectores previamente inicializados. 
 
@@ -14,7 +14,7 @@
 
 6. Realice un programa que calcule la fuerza de avance y retroceso de un cilindro neumático de doble efecto. Debe establecer previamente los valores de presión, así como las dimensiones físicas del cilindro para realizar el cálculo. 
 
-<h3>B. Con interacción de consola (fprintf o disp) y teclado (input)<h3>
+<h4>B. Con interacción de consola (fprintf o disp) y teclado (input)<h4>
 
 1. Realice un programa que calcule la potencia que consume un circuito ingresando por teclado el valor de corriente y voltaje. 
 
