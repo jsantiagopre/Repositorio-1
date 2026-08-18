@@ -1,3 +1,5 @@
+import math
+
 print("Seleccione el solido al cual desea saber el volumen")
 print("1. Prisma\n2. Piramida\n3 Cono truncado\n4.Cilindro\n")
 Solido=int(input("Seleccione el solido:\n"))

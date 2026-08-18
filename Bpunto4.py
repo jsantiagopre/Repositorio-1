@@ -1,7 +1,5 @@
-print("Escoger entre robot Cilíndrico, Cartesiano y esférico")
-print("1. Robot Cilindrico")
-print("2. Robot Cartesiano")
-print("3. Robot Esferico")
+print("Escoger entre robot Cilíndrico, Cartesiano y esférico:")
+print("1. Robot Cilindrico\n2. Robot Cartesiano\n3. Robot Esferico")
 
 Robot = int(input("Seleccione el tipo de robot: "))
 
@@ -19,3 +17,4 @@ elif Robot == 3:
     print("2 articulaciones rotacionales y 1 prismatica.")
 else:
     print("Opcion invalida.")
+    
