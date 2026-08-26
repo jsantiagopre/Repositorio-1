@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def obtener_contorno(ruta_imagen, nombre):
 
     img = cv2.imread(ruta_imagen)
@@ -12,7 +11,6 @@ def obtener_contorno(ruta_imagen, nombre):
         return None
 
     gris = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
     gris = cv2.GaussianBlur(gris, (5, 5), 0)
 
     _, binaria = cv2.threshold(
@@ -24,7 +22,7 @@ def obtener_contorno(ruta_imagen, nombre):
 
     contornos, jerarquia = cv2.findContours(
         binaria,
-        cv2.RETR_EXTERNAL,
+        cv2.RETR_TREE,
         cv2.CHAIN_APPROX_NONE
     )
 
@@ -32,27 +30,72 @@ def obtener_contorno(ruta_imagen, nombre):
         print(f"No se encontraron contornos en {nombre}")
         return None
 
-    contorno = max(contornos, key=cv2.contourArea)
+    contorno_exterior = max(contornos, key=cv2.contourArea)
 
-    coordenadas = contorno.reshape(-1, 2)
+    coordenadas_exterior = contorno_exterior.reshape(-1, 2)
 
-    print("\n" + nombre)
-    print("Número de puntos:", len(coordenadas))
+    print("\n" + "=" * 40)
+    print(nombre)
+    print("=" * 40)
+
+    print("\nCONTORNO EXTERIOR")
+    print("Número de puntos:", len(coordenadas_exterior))
     print("Primeras coordenadas X,Y:")
-    print(coordenadas[:20])
+    print(coordenadas_exterior[:20])
 
-    archivo = nombre + "_coordenadas.csv"
+    archivo_exterior = nombre + "_exterior.csv"
 
     np.savetxt(
-        archivo,
-        coordenadas,
+        archivo_exterior,
+        coordenadas_exterior,
         delimiter=",",
         header="X,Y",
         comments="",
         fmt="%d"
     )
 
-    print("Archivo guardado:", archivo)
+    print("Archivo guardado:", archivo_exterior)
+
+    contornos_internos = []
+
+    for i, contorno in enumerate(contornos):
+
+        # Si tiene padre, es un contorno interno
+        padre = jerarquia[0][i][3]
+
+        if padre != -1:
+            contornos_internos.append(contorno)
+
+    print("\nCONTORNOS INTERNOS")
+    print("Cantidad:", len(contornos_internos))
+
+    coordenadas_internas = []
+
+    for i, contorno in enumerate(contornos_internos):
+
+        coordenadas = contorno.reshape(-1, 2)
+
+        coordenadas_internas.append(coordenadas)
+
+        print(f"\nContorno interno {i + 1}")
+        print("Número de puntos:", len(coordenadas))
+        print("Primeras coordenadas X,Y:")
+        print(coordenadas[:20])
+
+        archivo_interno = (
+            nombre + f"_interior_{i + 1}.csv"
+        )
+
+        np.savetxt(
+            archivo_interno,
+            coordenadas,
+            delimiter=",",
+            header="X,Y",
+            comments="",
+            fmt="%d"
+        )
+
+        print("Archivo guardado:", archivo_interno)
 
     alto, ancho = gris.shape
 
@@ -62,7 +105,15 @@ def obtener_contorno(ruta_imagen, nombre):
     )
     cv2.drawContours(
         imagen_contorno,
-        [contorno],
+        [contorno_exterior],
+        -1,
+        255,
+        2
+    )
+
+    cv2.drawContours(
+        imagen_contorno,
+        contornos_internos,
         -1,
         255,
         2
@@ -70,17 +121,16 @@ def obtener_contorno(ruta_imagen, nombre):
 
     plt.figure(figsize=(8, 6))
     plt.imshow(imagen_contorno, cmap="gray")
-    plt.title("Contorno - " + nombre)
+    plt.title("Contornos - " + nombre)
     plt.axis("off")
     plt.show()
 
-    return coordenadas
+    return coordenadas_exterior, coordenadas_internas
 
 chevrolet = obtener_contorno(
     "image.png",
     "Chevrolet"
 )
-
 renault = obtener_contorno(
     "image2.png",
     "Renault"
