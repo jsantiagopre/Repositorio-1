@@ -1,20 +1,27 @@
-import board
-import busio as io
-from time import sleep
 import time
-import Adafruit_SSD1306
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
-import Adafruit_GPIO.I2C as I2C
-import subprocess
-RST = None  # Raspberry Pi pin configured to reset the OLED
-disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST, i2c_address=0x3C)
-disp.begin()
-disp.clear()
-disp.display()
+import board
+import digitalio
+from PIL import Image, ImageDraw, ImageFont
+import adafruit_ssd1306
+
+# Configurar el bus I2C usando la librería moderna 'board'
+i2c = board.I2C()
+
+# Configuración de la pantalla OLED (128x32 píxeles, dirección I2C 0x3C)
+# El pin de reset (RST) se define como None ya que se suele reiniciar por software o no se usa
+oled_width = 128
+oled_height = 32
+disp = adafruit_ssd1306.SSD1306_I2C(oled_width, oled_height, i2c, addr=0x3C)
+
+# Limpiar la pantalla al iniciar
+disp.fill(0)
+disp.show()
+
+# Crear una imagen en blanco para dibujar
 image = Image.new('1', (disp.width, disp.height))
 draw = ImageDraw.Draw(image)
+
+# Matriz de ejemplo (tu función 'ecci_bitmap')
 ecci_bitmap = [
     0b1111111111,
     0b1111111111,
@@ -27,37 +34,24 @@ ecci_bitmap = [
     0b1111111111,
     0b1111111111
 ]
+
 def draw_ecci(x, y):
     for i in range(10):
         for j in range(10):
             if (ecci_bitmap[i] >> (9 - j)) & 1:
-                draw.point((x + j, y + i), fill=1)
+                draw.pixel(x + j, y + i, 1)
 
+# Dibujar las formas
 draw_ecci(20, 10)
-ecci_bitmap = [
-    0b1111111111,
-    0b1111111111,
-    0b1110000000,
-    0b1110000000,
-    0b1110000000,
-    0b1110000000,
-    0b1110000000,
-    0b1110000000,
-    0b1111111111,
-    0b1111111111
-]
-def draw_ecci(x, y):
-    for i in range(10):
-        for j in range(10):
-            if (ecci_bitmap[i] >> (9 - j)) & 1:
-                draw.point((x + j, y + i), fill=1)
-
 draw_ecci(40, 10)
+
+# Mostrar la imagen en la pantalla OLED
 disp.image(image)
-disp.display()
+disp.show()
+
 try:
     while True:
         time.sleep(1)
 except KeyboardInterrupt:
-    disp.clear()
-    disp.display()
+    disp.fill(0)
+    disp.show()
