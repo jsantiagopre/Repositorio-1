@@ -1,7 +1,6 @@
 import time
 import board
-import digitalio
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 import adafruit_ssd1306
 
 # Configurar el bus I2C usando la librería moderna 'board'
@@ -20,8 +19,14 @@ disp.show()
 image = Image.new('1', (disp.width, disp.height))
 draw = ImageDraw.Draw(image)
 
-# Matriz de ejemplo (tu función 'ecci_bitmap')
-ecci_bitmap = [
+def draw_bitmap(x, y, bitmap):
+    for i in range(10):
+        for j in range(10):
+            if (bitmap[i] >> (9 - j)) & 1:
+                draw.point((x + j, y + i), fill=1)  # <- Usando point en lugar de pixel
+
+# 1. Primer mapa de bits (Letra 'E')
+ecci_bitmap_1 = [
     0b1111111111,
     0b1111111111,
     0b1110000000,
@@ -34,16 +39,23 @@ ecci_bitmap = [
     0b1111111111
 ]
 
-def draw_ecci(x, y):
-    for i in range(10):
-        for j in range(10):
-            if (ecci_bitmap[i] >> (9 - j)) & 1:
-                # Corregido: se usa draw.point en lugar de draw.pixel
-                draw.point((x + j, y + i), fill=1)
+# 2. Segundo mapa de bits (Letra 'C')
+ecci_bitmap_2 = [
+    0b1111111111,
+    0b1111111111,
+    0b1110000000,
+    0b1110000000,
+    0b1110000000,
+    0b1110000000,
+    0b1110000000,
+    0b1110000000,
+    0b1111111111,
+    0b1111111111
+]
 
-# Dibujar las formas
-draw_ecci(20, 10)
-draw_ecci(40, 10)
+# Dibujar las dos letras en diferentes posiciones (X, Y)
+draw_bitmap(20, 10, ecci_bitmap_1)  # Dibuja la 'E'
+draw_bitmap(40, 10, ecci_bitmap_2)  # Dibuja la 'C'
 
 # Mostrar la imagen en la pantalla OLED
 disp.image(image)
