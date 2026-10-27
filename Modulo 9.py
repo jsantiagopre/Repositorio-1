@@ -8,7 +8,6 @@ import adafruit_ssd1306
 i2c = board.I2C()
 
 # Configuración de la pantalla OLED (128x32 píxeles, dirección I2C 0x3C)
-# El pin de reset (RST) se define como None ya que se suele reiniciar por software o no se usa
 oled_width = 128
 oled_height = 32
 disp = adafruit_ssd1306.SSD1306_I2C(oled_width, oled_height, i2c, addr=0x3C)
@@ -39,7 +38,8 @@ def draw_ecci(x, y):
     for i in range(10):
         for j in range(10):
             if (ecci_bitmap[i] >> (9 - j)) & 1:
-                draw.pixel(x + j, y + i, 1)
+                # Corregido: se usa draw.point en lugar de draw.pixel
+                draw.point((x + j, y + i), fill=1)
 
 # Dibujar las formas
 draw_ecci(20, 10)
