@@ -1,64 +1,69 @@
+
 import board
-import busio as io
-from time import sleep
+import adafruit_ssd1306
 import time
-import Adafruit_SSD1306
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
-import Adafruit_GPIO.I2C as I2C
-import subprocess
-RST = None  # Raspberry Pi pin configured to reset the OLED
-disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST, i2c_address=0x3C)
-disp.begin()
-disp.clear()
-disp.display()
-image = Image.new('1', (disp.width, disp.height))
-draw = ImageDraw.Draw(image)
-ecci_bitmap = [
-    0b1111111111,
-    0b1111111111,
-    0b1110000000,
-    0b1110000000,
-    0b1111111111,
-    0b1111111111,
-    0b1110000000,
-    0b1110000000,
-    0b1111111111,
-    0b1111111111
-]
-def draw_ecci(x, y):
-    for i in range(10):
-        for j in range(10):
-            if (ecci_bitmap[i] >> (9 - j)) & 1:
-                draw.point((x + j, y + i), fill=1)
 
-draw_ecci(20, 10)
-ecci_bitmap = [
-    0b1111111111,
-    0b1111111111,
-    0b1110000000,
-    0b1110000000,
-    0b1110000000,
-    0b1110000000,
-    0b1110000000,
-    0b1110000000,
-    0b1111111111,
-    0b1111111111
-]
-def draw_ecci(x, y):
-    for i in range(10):
-        for j in range(10):
-            if (ecci_bitmap[i] >> (9 - j)) & 1:
-                draw.point((x + j, y + i), fill=1)
+i2c = board.I2C()
 
-draw_ecci(40, 10)
-disp.image(image)
-disp.display()
+disp = adafruit_ssd1306.SSD1306_I2C(
+    128, 32, i2c, addr=0x3C
+)
+
+# Limpiar pantalla
+disp.fill(0)
+disp.show()
+
+
+ecci_bitmap = [
+    0b111111111111,
+    0b111111111111,
+    0b111100000000,
+    0b111100000000,
+    0b111111111111,
+    0b111111111111,
+    0b111100000000,
+    0b111100000000,
+    0b111111111111,
+    0b111111111111
+]
+
+ecci_bitmap2 = [
+    0b111111111111,
+    0b111111111111,
+    0b111100000000,
+    0b111100000000,
+    0b111100000000,
+    0b111100000000,
+    0b111100000000,
+    0b111100000000,
+    0b111111111111,
+    0b111111111111
+]
+
+
+def draw_ecci(x, y, bitmap):
+
+    for i in range(10):
+        for j in range(12):
+
+            if (bitmap[i] >> (11 - j)) & 1:
+                disp.pixel(x + j, y + i, 1)
+
+
+disp.fill(0)
+
+draw_ecci(20, 10, ecci_bitmap)
+draw_ecci(40, 10, ecci_bitmap2)
+
+# Actualizar pantalla
+disp.show()
+
 try:
     while True:
         time.sleep(1)
-except KeyboardInterrupt:
-    disp.clear()
-    disp.display()
 
+except KeyboardInterrupt:
+
+    disp.fill(0)
+    disp.show()
+    print("Programa finalizado")
