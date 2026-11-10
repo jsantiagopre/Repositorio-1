@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw, ImageFont
 # CONFIGURACION DE THINGSPEAK
 # ==================================================
 
-WRITE_API_KEY = "TU_WRITE_API_KEY"
+WRITE_API_KEY = "RQH1QWRPM6A21VLW"
 
 URL = "https://api.thingspeak.com/update"
 
